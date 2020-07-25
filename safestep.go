@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// SafeStep used for handling multiple layers goroutine execution
 type SafeStep struct {
 	ctx       context.Context
 	cancel    context.CancelFunc
@@ -26,7 +27,8 @@ type goRoutineResp struct {
 
 type asyncFunc func(input map[string]interface{}) (interface{}, error)
 
-var ErrTimeout = errors.New("timeout occurred while executing async function") // timeout error
+// ErrTimeout timeout error
+var ErrTimeout = errors.New("timeout occurred while executing async function")
 
 // New initialization
 func New() *SafeStep {

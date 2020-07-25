@@ -110,7 +110,7 @@ func TestOperationTimeout(t *testing.T) {
 	f2 := func(input map[string]interface{}) (interface{}, error) {
 		fmt.Println("function 2 started")
 		time.Sleep(time.Millisecond * 750)
-		fmt.Println("function 1 ended")
+		fmt.Println("function 2 ended")
 		step.AddInput("id2", 2)
 		return 1.5, nil
 	}
