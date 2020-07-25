@@ -70,6 +70,10 @@ func main() {
 }
 ```
 
+## Features
+- Recover from panic (will convert panic to error)
+- Ability to set max timeout for all async functions execution
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
