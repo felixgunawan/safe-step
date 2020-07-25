@@ -1,6 +1,8 @@
 # safe-step
 
-![alt text](https://github.com/felixgunawan/safe-step/blob/master/img/img.jpg?raw=true)
+<p align="center">
+  <img src="https://github.com/felixgunawan/safe-step/blob/master/img/img.jpg?raw=true">
+</p>
 
 A simple golang package to safely handle your multiple layers goroutine execution.
 
