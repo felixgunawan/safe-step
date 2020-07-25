@@ -1,5 +1,7 @@
 # safe-step
 
+![alt text](https://github.com/felixgunawan/safe-step/master/img/img.jpg?raw=true)
+
 A simple golang package to safely handle your multiple layers goroutine execution.
 
 ## Installation
@@ -68,6 +70,23 @@ func main() {
 	}
 	fmt.Printf("result = %v", res)
 }
+```
+
+Output : 
+```golang
+function 1 started
+id = 1
+function 2 started
+function 3 started
+function 1 ended
+function 2 ended
+function 3 ended
+function 5 started
+id2 = 2
+function 4 started
+function 4 ended
+function 5 ended
+result = map[f1:1 f2:1.5 f3:3 f4:abcde f5:5]
 ```
 
 ## Features
