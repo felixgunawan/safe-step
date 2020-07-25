@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	safestep "github.com/felixgunawan/safe-step"
-	"testing"
 	"time"
 )
 
-func TestOperationBasic(t *testing.T) {
+func main() {
 	step := safestep.New()
 	step = step.AddInput("id", 1)
 	f1 := func(input map[string]interface{}) (interface{}, error) {
@@ -52,7 +51,7 @@ func TestOperationBasic(t *testing.T) {
 		AddFunction("f5", f5).
 		Do()
 	if err != nil {
-		t.Errorf("error on basic operation : %v", err)
+		fmt.Printf("err = %v", err)
 	}
 	fmt.Printf("result = %v", res)
 }
