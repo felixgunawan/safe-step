@@ -26,7 +26,7 @@ type goRoutineResp struct {
 
 type asyncFunc func(input map[string]interface{}) (interface{}, error)
 
-var ErrTimeout = errors.New("timeout occured while executing async function") // timeout error
+var ErrTimeout = errors.New("timeout occurred while executing async function") // timeout error
 
 // New initialization
 func New() *SafeStep {
