@@ -26,7 +26,7 @@ import (
 
 func main() {
 	step := safestep.New()
-	step = step.AddInput("id", 1)
+	step.AddInput("id", 1)
 	f1 := func(input map[string]interface{}) (interface{}, error) {
 		fmt.Println("function 1 started")
 		fmt.Printf("id = %d\n", input["id"])
@@ -60,6 +60,10 @@ func main() {
 		fmt.Println("function 5 ended")
 		return 5, nil
 	}
+	// this will :
+	// 1. run f1,f2,f3 in goroutine and wait for all of them to finish
+	// 2. run f4,f5 in goroutine and wait again
+	// 3. return result of all function execution in map
 	res, err := step.
 		AddFunction("f1", f1).
 		AddFunction("f2", f2).
@@ -93,8 +97,8 @@ result = map[f1:1 f2:1.5 f3:3 f4:abcde f5:5]
 ```
 
 ## Features
-- Recover from panic (will convert panic to error)
-- Ability to set max timeout for all async functions execution
+- Safe goroutine, will recover from panic inside goroutine execution (will convert panic to error)
+- Context-aware (see /example/timeout for implementation example using context.WithTimeout)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
