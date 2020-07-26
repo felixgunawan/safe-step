@@ -10,8 +10,8 @@ import (
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	step := NewWithContext(ctx)
-	step = safestep.AddInput("id", 1)
+	step := safestep.NewWithContext(ctx)
+	step.AddInput("id", 1)
 	f1 := func(input map[string]interface{}) (interface{}, error) {
 		fmt.Println("function 1 started")
 		fmt.Printf("id = %d\n", input["id"])
@@ -45,7 +45,7 @@ func main() {
 		fmt.Println("function 5 ended")
 		return 5, nil
 	}
-	_, err := step.
+	res, err := step.
 		AddFunction("f1", f1).
 		AddFunction("f2", f2).
 		AddFunction("f3", f3).

@@ -8,7 +8,7 @@ import (
 
 func main() {
 	step := safestep.New()
-	step = step.AddInput("id", 1)
+	step.AddInput("id", 1)
 	f1 := func(input map[string]interface{}) (interface{}, error) {
 		fmt.Println("function 1 started")
 		fmt.Printf("id = %d\n", input["id"])
