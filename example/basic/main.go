@@ -42,6 +42,10 @@ func main() {
 		fmt.Println("function 5 ended")
 		return 5, nil
 	}
+	// this will :
+	// 1. run f1,f2,f3 in goroutine and wait for all of them to finish
+	// 2. run f4,f5 in goroutine and wait again
+	// 3. return result of all function execution in map
 	res, err := step.
 		AddFunction("f1", f1).
 		AddFunction("f2", f2).

@@ -1,6 +1,7 @@
 package safestep
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -98,7 +99,9 @@ func TestOperationPanic(t *testing.T) {
 }
 
 func TestOperationTimeout(t *testing.T) {
-	step := New()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	step := NewWithContext(ctx)
 	step = step.AddInput("id", 1)
 	f1 := func(input map[string]interface{}) (interface{}, error) {
 		fmt.Println("function 1 started")
@@ -134,7 +137,6 @@ func TestOperationTimeout(t *testing.T) {
 		return 5, nil
 	}
 	_, err := step.
-		SetTimeout(time.Second).
 		AddFunction("f1", f1).
 		AddFunction("f2", f2).
 		AddFunction("f3", f3).
@@ -142,7 +144,7 @@ func TestOperationTimeout(t *testing.T) {
 		AddFunction("f4", f4).
 		AddFunction("f5", f5).
 		Do()
-	if err != ErrTimeout {
+	if err != context.DeadlineExceeded {
 		t.Errorf("no timeout error triggered")
 	}
 }

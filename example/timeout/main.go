@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	safestep "github.com/felixgunawan/safe-step"
 	"time"
 )
 
 func main() {
-	step := safestep.New()
-	step = step.AddInput("id", 1)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	step := NewWithContext(ctx)
+	step = safestep.AddInput("id", 1)
 	f1 := func(input map[string]interface{}) (interface{}, error) {
 		fmt.Println("function 1 started")
 		fmt.Printf("id = %d\n", input["id"])
@@ -42,8 +45,7 @@ func main() {
 		fmt.Println("function 5 ended")
 		return 5, nil
 	}
-	res, err := step.
-		SetTimeout(time.Second).
+	_, err := step.
 		AddFunction("f1", f1).
 		AddFunction("f2", f2).
 		AddFunction("f3", f3).
