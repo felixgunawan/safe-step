@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://raw.githubusercontent.com/felixgunawan/safe-step/master/LICENSE)
 [![GoReport](https://goreportcard.com/badge/github.com/felixgunawan/safe-step)](https://goreportcard.com/report/github.com/felixgunawan/safe-step)
 
-A simple golang package to safely handle your multiple layers goroutine execution.
+A simple golang library to safely handle your multiple layers goroutine execution.
 <p align="center">
   <img src="https://github.com/felixgunawan/safe-step/blob/master/img/img.jpg?raw=true">
 </p>
