@@ -27,6 +27,7 @@ type SafeStepStruct struct {
 	step      []map[string]asyncFunc
 	tempFuncs map[string]asyncFunc
 	result    map[string]interface{}
+	mapLock   sync.RWMutex
 	err       error
 }
 
@@ -62,13 +63,17 @@ func NewWithContext(ctx context.Context) SafeStep {
 
 // AddInput add input which can be used by asyncFunc parameter, note that it can also be used in previous step so it can acts like dependency
 func (step *SafeStepStruct) AddInput(code string, input interface{}) SafeStep {
+	step.mapLock.Lock()
 	step.input[code] = input
+	step.mapLock.Unlock()
 	return step
 }
 
 // AddFunction adding asyncFunc with function code (must be unique, otherwise previous function result will be overwritten)
 func (step *SafeStepStruct) AddFunction(code string, function asyncFunc) SafeStep {
+	step.mapLock.Lock()
 	step.tempFuncs[code] = function
+	step.mapLock.Unlock()
 	return step
 }
 
