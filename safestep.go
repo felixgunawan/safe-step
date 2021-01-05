@@ -18,6 +18,8 @@ type SafeStep interface {
 	Step() SafeStep
 	// Do execute all async functions according to their order
 	Do() (map[string]interface{}, error)
+	// Do execute all async functions according to their order(with maximum concurrency)
+	DoWithMaxConcurrency(maxConcurrency int) (map[string]interface{}, error)
 }
 
 // SafeStepStruct used for handling multiple layers goroutine execution
@@ -124,6 +126,68 @@ func (step *SafeStepStruct) Do() (map[string]interface{}, error) {
 		step.err = waitTimeout(step.ctx, &wg)
 		if step.err != nil {
 			return step.result, step.err
+		}
+		for range s { // put all asyncFunc response to result based on function code
+			mu.RLock()
+			resp := <-chGo
+			mu.RUnlock()
+			if resp.err != nil {
+				step.err = resp.err
+				return step.result, step.err
+			}
+			step.result[resp.code] = resp.result
+		}
+	}
+	return step.result, step.err
+}
+
+// Do execute all async functions according to their order(with maximum concurrency)
+func (step *SafeStepStruct) DoWithMaxConcurrency(maxConcurrency int) (map[string]interface{}, error) {
+	// check just in case there are still some function not appended
+	if len(step.tempFuncs) > 0 {
+		step.Step()
+	}
+	// execute async funcs in their respective order
+	for _, s := range step.step {
+		chGo := make(chan goRoutineResp, len(s)) // to get asyncFunc result
+		defer close(chGo)
+		var wg sync.WaitGroup // to wait all goroutine/timeout finish (whichever first)
+		var mu sync.RWMutex   // prevent race condition
+		var counter = 0       // count total data has been executed
+		for code, f := range s {
+			wg.Add(1)
+			go func(code string, f asyncFunc) {
+				defer func() { // recover go routine in case of panic
+					if r := recover(); r != nil {
+						mu.Lock()
+						chGo <- goRoutineResp{
+							code: code,
+							err:  fmt.Errorf("%v", r), // convert panic to err
+						}
+						mu.Unlock()
+						wg.Done()
+					}
+				}()
+				res, err := f(step.input)
+				mu.Lock()
+				chGo <- goRoutineResp{
+					code:   code,
+					result: res,
+					err:    err,
+				}
+				mu.Unlock()
+				wg.Done()
+			}(code, f)
+
+			// limit maximum concurrency that will be executed in this function
+			if ((counter + 1) == len(s)) ||
+				((counter+1)%maxConcurrency == 0) {
+				step.err = waitTimeout(step.ctx, &wg)
+				if step.err != nil {
+					return step.result, step.err
+				}
+			}
+			counter++ // add counter
 		}
 		for range s { // put all asyncFunc response to result based on function code
 			mu.RLock()
