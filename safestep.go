@@ -11,6 +11,8 @@ type SafeStep interface {
 	// AddInput add input which can be used by asyncFunc parameter
 	// it can also be called in previous function call step so it can acts like dependency
 	AddInput(code string, input interface{}) SafeStep
+	// GetInput will get input thar can be used inside asyncFunc
+	GetInput(code string) interface{}
 	// AddFunction adding asyncFunc with function code
 	// code must be unique, otherwise previous function result will be overwritten
 	AddFunction(code string, function asyncFunc) SafeStep
@@ -39,7 +41,7 @@ type goRoutineResp struct {
 	err    error
 }
 
-type asyncFunc func(input map[string]interface{}) (interface{}, error)
+type asyncFunc func() (interface{}, error)
 
 // New initialization
 func New() SafeStep {
@@ -61,6 +63,14 @@ func NewWithContext(ctx context.Context) SafeStep {
 		tempFuncs: make(map[string]asyncFunc),
 		step:      make([]map[string]asyncFunc, 0),
 	}
+}
+
+// GetInput will get input thar can be used inside asyncFunc
+func (step *SafeStepStruct) GetInput(code string) interface{} {
+	step.mapLock.Lock()
+	input := step.input[code]
+	step.mapLock.Unlock()
+	return input
 }
 
 // AddInput add input which can be used by asyncFunc parameter, note that it can also be used in previous step so it can acts like dependency
@@ -112,7 +122,7 @@ func (step *SafeStepStruct) Do() (map[string]interface{}, error) {
 						wg.Done()
 					}
 				}()
-				res, err := f(step.input)
+				res, err := f()
 				mu.Lock()
 				chGo <- goRoutineResp{
 					code:   code,
@@ -168,7 +178,7 @@ func (step *SafeStepStruct) DoWithMaxConcurrency(maxConcurrency int) (map[string
 						wg.Done()
 					}
 				}()
-				res, err := f(step.input)
+				res, err := f()
 				mu.Lock()
 				chGo <- goRoutineResp{
 					code:   code,

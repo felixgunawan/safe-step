@@ -2,6 +2,7 @@ package safestep
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -9,20 +10,21 @@ import (
 func TestOperationBasic(t *testing.T) {
 	step := New()
 	step = step.AddInput("id", 1)
-	f1 := func(input map[string]interface{}) (interface{}, error) {
+	f1 := func() (interface{}, error) {
 		return 1, nil
 	}
-	f2 := func(input map[string]interface{}) (interface{}, error) {
+	f2 := func() (interface{}, error) {
 		step.AddInput("id2", 2)
 		return 1.5, nil
 	}
-	f3 := func(input map[string]interface{}) (interface{}, error) {
+	f3 := func() (interface{}, error) {
 		return 3, nil
 	}
-	f4 := func(input map[string]interface{}) (interface{}, error) {
+	f4 := func() (interface{}, error) {
 		return "abcde", nil
 	}
-	f5 := func(input map[string]interface{}) (interface{}, error) {
+	f5 := func() (interface{}, error) {
+		fmt.Printf("id2 = %d\n", step.GetInput("id2"))
 		return 5, nil
 	}
 	_, err := step.
@@ -41,21 +43,21 @@ func TestOperationBasic(t *testing.T) {
 func TestOperationPanic(t *testing.T) {
 	step := New()
 	step = step.AddInput("id", 1)
-	f1 := func(input map[string]interface{}) (interface{}, error) {
+	f1 := func() (interface{}, error) {
 		panic("test")
 		return 1, nil
 	}
-	f2 := func(input map[string]interface{}) (interface{}, error) {
+	f2 := func() (interface{}, error) {
 		step.AddInput("id2", 2)
 		return 2, nil
 	}
-	f3 := func(input map[string]interface{}) (interface{}, error) {
+	f3 := func() (interface{}, error) {
 		return 3, nil
 	}
-	f4 := func(input map[string]interface{}) (interface{}, error) {
+	f4 := func() (interface{}, error) {
 		return 4, nil
 	}
-	f5 := func(input map[string]interface{}) (interface{}, error) {
+	f5 := func() (interface{}, error) {
 		return 5, nil
 	}
 	_, err := step.
@@ -76,21 +78,21 @@ func TestOperationTimeout(t *testing.T) {
 	defer cancel()
 	step := NewWithContext(ctx)
 	step = step.AddInput("id", 1)
-	f1 := func(input map[string]interface{}) (interface{}, error) {
+	f1 := func() (interface{}, error) {
 		time.Sleep(20 * time.Millisecond)
 		return 1, nil
 	}
-	f2 := func(input map[string]interface{}) (interface{}, error) {
+	f2 := func() (interface{}, error) {
 		step.AddInput("id2", 2)
 		return 1.5, nil
 	}
-	f3 := func(input map[string]interface{}) (interface{}, error) {
+	f3 := func() (interface{}, error) {
 		return 3, nil
 	}
-	f4 := func(input map[string]interface{}) (interface{}, error) {
+	f4 := func() (interface{}, error) {
 		return "abcde", nil
 	}
-	f5 := func(input map[string]interface{}) (interface{}, error) {
+	f5 := func() (interface{}, error) {
 		return 5, nil
 	}
 	_, err := step.
@@ -109,20 +111,20 @@ func TestOperationTimeout(t *testing.T) {
 func TestOperationBasicWithMaxConcurrency(t *testing.T) {
 	step := New()
 	step = step.AddInput("id", 1)
-	f1 := func(input map[string]interface{}) (interface{}, error) {
+	f1 := func() (interface{}, error) {
 		return 1, nil
 	}
-	f2 := func(input map[string]interface{}) (interface{}, error) {
+	f2 := func() (interface{}, error) {
 		step.AddInput("id2", 2)
 		return 1.5, nil
 	}
-	f3 := func(input map[string]interface{}) (interface{}, error) {
+	f3 := func() (interface{}, error) {
 		return 3, nil
 	}
-	f4 := func(input map[string]interface{}) (interface{}, error) {
+	f4 := func() (interface{}, error) {
 		return "abcde", nil
 	}
-	f5 := func(input map[string]interface{}) (interface{}, error) {
+	f5 := func() (interface{}, error) {
 		return 5, nil
 	}
 	_, err := step.
@@ -141,21 +143,21 @@ func TestOperationBasicWithMaxConcurrency(t *testing.T) {
 func TestOperationPanicWithMaxConcurrency(t *testing.T) {
 	step := New()
 	step = step.AddInput("id", 1)
-	f1 := func(input map[string]interface{}) (interface{}, error) {
+	f1 := func() (interface{}, error) {
 		panic("test")
 		return 1, nil
 	}
-	f2 := func(input map[string]interface{}) (interface{}, error) {
+	f2 := func() (interface{}, error) {
 		step.AddInput("id2", 2)
 		return 2, nil
 	}
-	f3 := func(input map[string]interface{}) (interface{}, error) {
+	f3 := func() (interface{}, error) {
 		return 3, nil
 	}
-	f4 := func(input map[string]interface{}) (interface{}, error) {
+	f4 := func() (interface{}, error) {
 		return 4, nil
 	}
-	f5 := func(input map[string]interface{}) (interface{}, error) {
+	f5 := func() (interface{}, error) {
 		return 5, nil
 	}
 	_, err := step.
@@ -176,21 +178,21 @@ func TestOperationTimeoutWithMaxConcurrency(t *testing.T) {
 	defer cancel()
 	step := NewWithContext(ctx)
 	step = step.AddInput("id", 1)
-	f1 := func(input map[string]interface{}) (interface{}, error) {
+	f1 := func() (interface{}, error) {
 		time.Sleep(20 * time.Millisecond)
 		return 1, nil
 	}
-	f2 := func(input map[string]interface{}) (interface{}, error) {
+	f2 := func() (interface{}, error) {
 		step.AddInput("id2", 2)
 		return 1.5, nil
 	}
-	f3 := func(input map[string]interface{}) (interface{}, error) {
+	f3 := func() (interface{}, error) {
 		return 3, nil
 	}
-	f4 := func(input map[string]interface{}) (interface{}, error) {
+	f4 := func() (interface{}, error) {
 		return "abcde", nil
 	}
-	f5 := func(input map[string]interface{}) (interface{}, error) {
+	f5 := func() (interface{}, error) {
 		return 5, nil
 	}
 	_, err := step.
